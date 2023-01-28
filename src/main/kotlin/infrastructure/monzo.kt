@@ -2,6 +2,7 @@ package lmirabal.infrastructure
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import lmirabal.Bank
 import lmirabal.finance.Amount
 import lmirabal.model.Account
 import lmirabal.model.AccountAddress
@@ -15,13 +16,13 @@ import org.http4k.format.KotlinxSerialization.auto
 import org.http4k.lens.Header
 import java.util.*
 
-class MonzoApi(accessToken: String) {
+class MonzoApi(accessToken: String) : Bank {
     private val client: HttpHandler = ClientFilters.SetBaseUriFrom(Uri.of("https://api.monzo.com"))
         .then(ClientFilters.BearerAuth(accessToken))
         .then(DebuggingFilters.PrintRequestAndResponse())
         .then(JavaHttpClient())
 
-    fun getAccountBy(address: AccountAddress): Account {
+    override fun getAccountBy(address: AccountAddress): Account {
         fun getAccounts(): List<AccountResponse> {
             val accountsRequest = Request(Method.GET, "/accounts")
                 .query("account_type", "uk_retail")
@@ -40,14 +41,14 @@ class MonzoApi(accessToken: String) {
             .let { it.asAccountWithBalance(getBalance(it.id)) }
     }
 
-    fun getPotsFor(account: Account): List<Pot> {
+    override fun getPotsFor(account: Account): List<Pot> {
         val potsRequest = Request(Method.GET, "/pots").query("current_account_id", account.id)
         return potsLens(client(potsRequest))
             .filter { !it.deleted }
             .map { it.asPot() }
     }
 
-    fun deposit(from: Account, to: Pot, amount: Amount): Pot {
+    override fun deposit(from: Account, to: Pot, amount: Amount): Pot {
         val depositRequest = Request(Method.PUT, "/pots/${to.id}/deposit")
             .with(Header.CONTENT_TYPE of ContentType.APPLICATION_FORM_URLENCODED)
             .form("source_account_id", from.id)
@@ -56,7 +57,7 @@ class MonzoApi(accessToken: String) {
         return potLens(client(depositRequest))
     }
 
-    fun withdraw(from: Pot, to: Account, amount: Amount): Pot {
+    override fun withdraw(from: Pot, to: Account, amount: Amount): Pot {
         val withdrawRequest = Request(Method.PUT, "/pots/${from.id}/withdraw")
             .with(Header.CONTENT_TYPE of ContentType.APPLICATION_FORM_URLENCODED)
             .form("destination_account_id", to.id)

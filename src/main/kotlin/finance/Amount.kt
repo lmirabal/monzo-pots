@@ -42,7 +42,7 @@ class Amount(val pence: Long) {
 
 
     companion object {
-
+        val ZERO = Amount(0)
         val ONE = Amount(100)
         fun ofPounds(pounds: Int) = ofPounds(pounds.toLong())
         fun ofPounds(pounds: Long) = Amount(pounds * 100)
