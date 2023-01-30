@@ -106,6 +106,6 @@ class StubBankTest {
     }
 
     private fun StubBank.createPot(name: String, balance: Amount): Pot {
-        return createPot(CreatePotRequest(sampleAccount, name, balance))
+        return createPot(CreatePotRequest(sampleAccount, PotName(name), balance))
     }
 }
