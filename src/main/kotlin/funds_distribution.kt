@@ -4,6 +4,7 @@ import lmirabal.finance.Amount
 import lmirabal.model.Account
 import lmirabal.model.AccountAddress
 import lmirabal.model.Pot
+import lmirabal.model.PotName
 
 fun distributeFunds(bank: Bank, manifest: DistributionManifest) {
     val currentAccount: Account = bank.getAccountBy(manifest.mainAccount)
@@ -28,10 +29,8 @@ fun distributeFunds(bank: Bank, manifest: DistributionManifest) {
     bank.deposit(from = currentAccount, to = remainderPot, amount = remainderBalance)
 }
 
-operator fun List<Pot>.get(potName: PotName): Pot = first { it.name == potName.value }
+operator fun List<Pot>.get(potName: PotName): Pot = first { it.name == potName }
 
-@JvmInline
-value class PotName(val value: String)
 data class Deposit(val to: PotName, val amount: Amount)
 data class Remainder(val to: PotName, val atLeast: Amount)
 data class DistributionManifest(

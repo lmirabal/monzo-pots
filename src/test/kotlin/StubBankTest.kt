@@ -5,6 +5,7 @@ import lmirabal.finance.pounds
 import lmirabal.model.Account
 import lmirabal.model.AccountAddress
 import lmirabal.model.Pot
+import lmirabal.model.PotName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -42,7 +43,7 @@ class StubBankTest {
 
         val pot = bank.createPot("pot", 100.pounds)
 
-        assertEquals(Pot("id", "pot", 100.pounds), pot)
+        assertEquals(Pot("id", PotName("pot"), 100.pounds), pot)
     }
 
     @Test

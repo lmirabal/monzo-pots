@@ -2,6 +2,7 @@ package lmirabal
 
 import lmirabal.finance.pounds
 import lmirabal.model.AccountAddress
+import lmirabal.model.PotName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals

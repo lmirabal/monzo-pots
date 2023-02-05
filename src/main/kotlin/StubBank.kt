@@ -4,6 +4,7 @@ import lmirabal.finance.Amount
 import lmirabal.model.Account
 import lmirabal.model.AccountAddress
 import lmirabal.model.Pot
+import lmirabal.model.PotName
 import java.util.*
 
 data class CreateAccountRequest(val address: AccountAddress, val balance: Amount)
@@ -18,7 +19,7 @@ class StubBank(private val idGenerator: IdGenerator = randomUuid()) : Bank {
             .also { account -> accounts[request.address] = account }
 
     fun createPot(request: CreatePotRequest): Pot {
-        return Pot(idGenerator(), request.name.value, request.balance)
+        return Pot(idGenerator(), request.name, request.balance)
             .also { pot ->
                 pots.merge(request.account, setOf(pot)) { existing, newPot -> existing + newPot }
             }
