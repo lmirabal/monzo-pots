@@ -8,8 +8,11 @@ import lmirabal.model.PotName
 
 fun distributeFunds(bank: Bank, manifest: DistributionManifest) {
     val currentAccount: Account = bank.getAccountBy(manifest.mainAccount)
-    println(currentAccount)
-    val pots = bank.getPotsFor(currentAccount)
+    val pots: List<Pot> = bank.getPotsFor(currentAccount)
+
+    val missingPots = manifest.potNames.missingFrom(pots)
+    if (missingPots.isNotEmpty())
+        throw IllegalArgumentException("Manifest contains invalid pots=$missingPots")
 
     val sourcePot = pots[manifest.source]
     if (sourcePot.balance < manifest.minimumSourceFunds)
@@ -31,6 +34,11 @@ fun distributeFunds(bank: Bank, manifest: DistributionManifest) {
 
 operator fun List<Pot>.get(potName: PotName): Pot = first { it.name == potName }
 
+private fun List<PotName>.missingFrom(pots: List<Pot>): List<PotName> {
+    val existingPotNames = pots.map { it.name }
+    return filter { potName -> potName !in existingPotNames }
+}
+
 data class Deposit(val to: PotName, val amount: Amount)
 data class Remainder(val to: PotName, val atLeast: Amount)
 data class DistributionManifest(
@@ -45,5 +53,6 @@ data class DistributionManifest(
         .reduce { amount1, amount2 -> amount1 + amount2 }
 
     val minimumSourceFunds = keepInMainAccount + depositAmount + remainder.atLeast
+    val potNames = listOf(source) + deposits.map { it.to } + remainder.to
     fun remainderAmount(sourceBalance: Amount): Amount = sourceBalance - keepInMainAccount - depositAmount
 }

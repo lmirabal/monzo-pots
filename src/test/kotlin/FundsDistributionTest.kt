@@ -85,6 +85,113 @@ class FundsDistributionTest {
         assertEquals("Not enough funds: required=£110.00 available=£100.00", exception.message)
     }
 
+    @Test
+    fun `does not distribute when the source pot does not exist`() {
+        val invalidSource = PotName("invalid-source")
+        val destination = bank.createPot("destination", 0)
+        val remainder = bank.createPot("remainder", 0)
+
+        val manifest = DistributionManifest(
+            mainAccount = accountAddress,
+            source = invalidSource,
+            deposits = listOf(Deposit(to = destination, amount = 100.pounds)),
+            keepInMainAccount = 100.pounds,
+            remainder = Remainder(to = remainder, atLeast = 100.pounds)
+        )
+        val exception = assertThrows<IllegalArgumentException> {
+            distributeFunds(bank, manifest)
+        }
+
+        bank.asserting()
+            .accountBalance(0)
+            .potBalance(destination, 0)
+            .potBalance(remainder, 0)
+        assertEquals("Manifest contains invalid pots=[invalid-source]", exception.message)
+    }
+
+    @Test
+    fun `does not distribute when a destination pot does not exist`() {
+        val source = bank.createPot("source", 100)
+        val destination = bank.createPot("destination", 0)
+        val invalidDestination = PotName("invalid-destination")
+        val remainder = bank.createPot("remainder", 0)
+
+        val manifest = DistributionManifest(
+            mainAccount = accountAddress,
+            source = source,
+            deposits = listOf(
+                Deposit(to = destination, amount = 10.pounds),
+                Deposit(to = invalidDestination, amount = 10.pounds)
+            ),
+            keepInMainAccount = 10.pounds,
+            remainder = Remainder(to = remainder, atLeast = 10.pounds)
+        )
+        val exception = assertThrows<IllegalArgumentException> {
+            distributeFunds(bank, manifest)
+        }
+
+        bank.asserting()
+            .accountBalance(0)
+            .potBalance(source, 100)
+            .potBalance(destination, 0)
+            .potBalance(remainder, 0)
+        assertEquals("Manifest contains invalid pots=[invalid-destination]", exception.message)
+    }
+
+    @Test
+    fun `does not distribute when the remainder pot does not exist`() {
+        val source = bank.createPot("source", 100)
+        val destination = bank.createPot("destination", 0)
+        val invalidRemainder = PotName("invalid-remainder")
+
+        val manifest = DistributionManifest(
+            mainAccount = accountAddress,
+            source = source,
+            deposits = listOf(Deposit(to = destination, amount = 10.pounds)),
+            keepInMainAccount = 10.pounds,
+            remainder = Remainder(to = invalidRemainder, atLeast = 10.pounds)
+        )
+        val exception = assertThrows<IllegalArgumentException> {
+            distributeFunds(bank, manifest)
+        }
+
+        bank.asserting()
+            .accountBalance(0)
+            .potBalance(source, 100)
+            .potBalance(destination, 0)
+        assertEquals("Manifest contains invalid pots=[invalid-remainder]", exception.message)
+    }
+
+    @Test
+    fun `does not distribute when not all pots are valid`() {
+        val invalidSource = PotName("invalid-source")
+        val destination = bank.createPot("destination", 0)
+        val invalidDestination = PotName("invalid-destination")
+        val invalidRemainder = PotName("invalid-remainder")
+
+        val manifest = DistributionManifest(
+            mainAccount = accountAddress,
+            source = invalidSource,
+            deposits = listOf(
+                Deposit(to = destination, amount = 100.pounds),
+                Deposit(to = invalidDestination, amount = 100.pounds)
+            ),
+            keepInMainAccount = 100.pounds,
+            remainder = Remainder(to = invalidRemainder, atLeast = 100.pounds)
+        )
+        val exception = assertThrows<IllegalArgumentException> {
+            distributeFunds(bank, manifest)
+        }
+
+        bank.asserting()
+            .accountBalance(0)
+            .potBalance(destination, 0)
+        assertEquals(
+            "Manifest contains invalid pots=[invalid-source, invalid-destination, invalid-remainder]",
+            exception.message
+        )
+    }
+
     private fun StubBank.createPot(name: String, initialBalance: Int) =
         PotName(name)
             .also { potName ->
