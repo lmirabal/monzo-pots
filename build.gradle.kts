@@ -1,8 +1,9 @@
+@Suppress("DSL_SCOPE_VIOLATION") // Because of Bug KTIJ-19370 in IDE.
 plugins {
-    kotlin("jvm") version "1.8.0"
-    kotlin("plugin.serialization") version "1.8.0"
+    alias(libs.plugins.kotlin.jvm)
     application
     alias(libs.plugins.testlogger)
+    alias(libs.plugins.kotlin.serialisation)
 }
 
 group = "lmirabal"
@@ -15,7 +16,7 @@ dependencies {
     implementation(libs.http4k.core)
     implementation(libs.http4k.serialisation.kotlinx)
     implementation(libs.kotlinx.datetime)
-    testImplementation(kotlin("test"))
+    testImplementation(libs.kotlin.test)
     testImplementation(libs.junit.params)
 }
 
@@ -27,7 +28,7 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(libs.versions.jdk.get().toInt())
 }
 
 application {
