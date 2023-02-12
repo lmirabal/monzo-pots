@@ -3,7 +3,7 @@ package lmirabal
 import lmirabal.finance.Amount
 import lmirabal.infrastructure.Bank
 import lmirabal.model.Account
-import lmirabal.model.AccountAddress
+import lmirabal.model.DistributionManifest
 import lmirabal.model.Pot
 import lmirabal.model.PotName
 
@@ -33,27 +33,23 @@ fun distributeFunds(bank: Bank, manifest: DistributionManifest) {
     bank.deposit(from = currentAccount, to = remainderPot, amount = remainderBalance)
 }
 
-operator fun List<Pot>.get(potName: PotName): Pot = first { it.name == potName }
+internal operator fun List<Pot>.get(potName: PotName): Pot = first { it.name == potName }
 
 private fun List<PotName>.missingFrom(pots: List<Pot>): List<PotName> {
     val existingPotNames = pots.map { it.name }
     return filter { potName -> potName !in existingPotNames }
 }
 
-data class Deposit(val to: PotName, val amount: Amount)
-data class Remainder(val to: PotName, val atLeast: Amount)
-data class DistributionManifest(
-    val mainAccount: AccountAddress,
-    val source: PotName,
-    val deposits: List<Deposit>,
-    val keepInMainAccount: Amount,
-    val remainder: Remainder
-) {
-    private val depositAmount = deposits
+private val DistributionManifest.depositAmount
+    get() = deposits
         .map { it.amount }
         .reduce { amount1, amount2 -> amount1 + amount2 }
 
-    val minimumSourceFunds = keepInMainAccount + depositAmount + remainder.atLeast
-    val potNames = listOf(source) + deposits.map { it.to } + remainder.to
-    fun remainderAmount(sourceBalance: Amount): Amount = sourceBalance - keepInMainAccount - depositAmount
-}
+internal val DistributionManifest.minimumSourceFunds
+    get() = keepInMainAccount + depositAmount + remainder.atLeast
+internal val DistributionManifest.potNames
+    get() = listOf(source) + deposits.map { it.to } + remainder.to
+
+internal fun DistributionManifest.remainderAmount(sourceBalance: Amount): Amount =
+    sourceBalance - keepInMainAccount - depositAmount
+

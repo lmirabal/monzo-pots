@@ -33,12 +33,20 @@ The manifest in code looks like:
 
 ```kotlin
 DistributionManifest(
-    mainAccount = AccountAddress("123456", "123456789"),
-    source = PotName("source"),
-    deposits = listOf(Deposit(to = PotName("destination"), amount = 10.pounds)),
-    keepInMainAccount = 10.pounds,
-    remainder = Remainder(to = PotName("Savings"), atLeast = 10.pounds)
+  mainAccount = AccountAddress("123456", "123456789"),
+  source = PotName("source"),
+  deposits = listOf(Deposit(to = PotName("destination"), amount = 10.pounds)),
+  keepInMainAccount = 10.pounds,
+  remainder = Remainder(to = PotName("Savings"), atLeast = 10.pounds)
 )
 ```
 
 It currently can only be executed via console grabbing an auth token from the Monzo developer portal.
+
+## Project structure
+
+- application: contains the logic of the application, hiding its implementation details.
+- api: exposes types requires to interact with the application.
+- finance: utility project to deal with amounts.
+- monzo-adapter: monzo implementation of the bank abstraction.
+- console: console implementation of the application.
