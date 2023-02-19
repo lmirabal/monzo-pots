@@ -86,7 +86,7 @@ private val potLens = Body.auto<PotResponse>().map(PotResponse::asPot).toLens()
 private fun AccountResponse.asAccountWithBalance(balance: Amount) =
     Account(id, AccountAddress(sort_code, account_number), balance)
 
-private fun PotResponse.asPot() = Pot(id, PotName(name), Amount(pence = balance))
+private fun PotResponse.asPot() = Pot(id, PotName(name.trim()), Amount(pence = balance))
 
 @Serializable
 private class Accounts(val accounts: List<AccountResponse>)
