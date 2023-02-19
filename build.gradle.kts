@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.8.0"
+    kotlin("plugin.serialization") version "1.8.0"
     application
 }
 
@@ -10,7 +11,11 @@ repositories {
 }
 
 dependencies {
+    implementation(libs.http4k.core)
+    implementation(libs.http4k.serialisation.kotlinx)
+    implementation(libs.kotlinx.datetime)
     testImplementation(kotlin("test"))
+    testImplementation(libs.junit.params)
 }
 
 tasks.test {
@@ -22,5 +27,5 @@ kotlin {
 }
 
 application {
-    mainClass.set("MainKt")
+    mainClass.set("lmirabal.MainKt")
 }

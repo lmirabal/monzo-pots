@@ -1,7 +1,23 @@
-fun main(args: Array<String>) {
-    println("Hello World!")
+package lmirabal
 
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
+import lmirabal.finance.pound
+import lmirabal.infrastructure.MonzoApi
+import lmirabal.model.Account
+import lmirabal.model.AccountAddress
+import lmirabal.model.Pot
+
+fun main(args: Array<String>) {
+    val monzo = MonzoApi(accessToken = args[0])
+    val currentAccount: Account = monzo.getAccountBy(AccountAddress(args[1], args[2]))
+    println(currentAccount)
+
+    val pots: List<Pot> = monzo.getPotsFor(currentAccount)
+    println(pots)
+
+    val pot = pots[0]
+    val afterDeposit = monzo.deposit(currentAccount, pot, 1.pound)
+    println(afterDeposit)
+
+    val afterWithdrawal = monzo.withdraw(pot, currentAccount, 1.pound)
+    println(afterWithdrawal)
 }
