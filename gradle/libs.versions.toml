@@ -6,3 +6,6 @@ http4k-core = { module = "org.http4k:http4k-core", version.ref = "http4k" }
 http4k-serialisation-kotlinx = { module = "org.http4k:http4k-format-kotlinx-serialization", version.ref = "http4k" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.0" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version = "5.8.1" }
+
+[plugins]
+testlogger = { id = "com.adarshr.test-logger", version = "3.2.0" }
