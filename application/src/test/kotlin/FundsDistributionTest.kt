@@ -2,6 +2,9 @@ package lmirabal
 
 import lmirabal.finance.Amount
 import lmirabal.finance.pounds
+import lmirabal.infrastructure.CreateAccountRequest
+import lmirabal.infrastructure.CreatePotRequest
+import lmirabal.infrastructure.StubBank
 import lmirabal.model.Account
 import lmirabal.model.AccountAddress
 import lmirabal.model.Pot

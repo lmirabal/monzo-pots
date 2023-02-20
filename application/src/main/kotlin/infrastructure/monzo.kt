@@ -2,7 +2,6 @@ package lmirabal.infrastructure
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
-import lmirabal.Bank
 import lmirabal.finance.Amount
 import lmirabal.model.Account
 import lmirabal.model.AccountAddress

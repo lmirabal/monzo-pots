@@ -1,6 +1,7 @@
 package lmirabal
 
 import lmirabal.finance.Amount
+import lmirabal.infrastructure.Bank
 import lmirabal.model.Account
 import lmirabal.model.AccountAddress
 import lmirabal.model.Pot
