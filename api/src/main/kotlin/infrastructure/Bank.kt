@@ -1,4 +1,4 @@
-package lmirabal
+package lmirabal.infrastructure
 
 import lmirabal.finance.Amount
 import lmirabal.model.Account
