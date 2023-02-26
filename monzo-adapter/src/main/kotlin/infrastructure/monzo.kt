@@ -7,7 +7,7 @@ import lmirabal.model.Account
 import lmirabal.model.AccountAddress
 import lmirabal.model.Pot
 import lmirabal.model.PotName
-import org.http4k.client.JavaHttpClient
+import org.http4k.client.OkHttp
 import org.http4k.core.*
 import org.http4k.core.body.form
 import org.http4k.filter.ClientFilters
@@ -20,7 +20,7 @@ class MonzoApi(accessToken: String) : Bank {
     private val client: HttpHandler = ClientFilters.SetBaseUriFrom(Uri.of("https://api.monzo.com"))
         .then(ClientFilters.BearerAuth(accessToken))
         .then(DebuggingFilters.PrintRequestAndResponse())
-        .then(JavaHttpClient())
+        .then(OkHttp())
 
     override fun getAccountBy(address: AccountAddress): Account {
         fun getAccounts(): List<AccountResponse> {
