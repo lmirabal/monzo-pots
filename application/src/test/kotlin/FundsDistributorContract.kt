@@ -17,12 +17,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
-class FundsDistributorContract {
+abstract class FundsDistributorContract {
 
-    private val bank: OnboardingBank = StubBank()
-    private val accountAddress = AccountAddress("123456", "123456789")
-    private val account = bank.createAccount(CreateAccountRequest(accountAddress, 0.pounds))
-    private val fundsDistributor = FundsDistributorApplication(bank)
+    val bank: OnboardingBank = StubBank()
+    abstract val fundsDistributor: FundsDistributor
+    private val accountAddress: AccountAddress = AccountAddress("123456", "123456789")
+    private val account: Account = bank.createAccount(CreateAccountRequest(accountAddress, 0.pounds))
 
     @Test
     fun `distribute funds`() {
