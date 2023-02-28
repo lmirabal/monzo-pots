@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
-class FundsDistributionTest {
+class FundsDistributorContract {
 
     private val bank = StubBank()
     private val accountAddress = AccountAddress("123456", "123456789")
