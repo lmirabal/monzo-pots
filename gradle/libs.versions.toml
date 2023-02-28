@@ -8,6 +8,9 @@ kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 http4k-core = { module = "org.http4k:http4k-core", version.ref = "http4k" }
 http4k-serialisation-kotlinx = { module = "org.http4k:http4k-format-kotlinx-serialization", version.ref = "http4k" }
+http4k-okhttp = { module = "org.http4k:http4k-client-okhttp", version.ref = "http4k" }
+http4k-jetty = { module = "org.http4k:http4k-server-jetty", version.ref = "http4k" }
+http4k-hamkrest = { module = "org.http4k:http4k-testing-hamkrest", version.ref = "http4k" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.0" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version = "5.8.1" }
 testlogger-gradle = { module = "com.adarshr:gradle-test-logger-plugin", version = "3.2.0" }

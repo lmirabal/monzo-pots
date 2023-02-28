@@ -7,6 +7,7 @@ plugins {
 dependencies {
     implementation(projects.api)
     implementation(libs.http4k.core)
+    implementation(libs.http4k.okhttp)
     implementation(libs.http4k.serialisation.kotlinx)
     implementation(libs.kotlinx.datetime)
 }
