@@ -49,4 +49,10 @@ It currently can only be executed via console grabbing an auth token from the Mo
 - api: exposes types requires to interact with the application.
 - finance: utility project to deal with amounts.
 - monzo-adapter: monzo implementation of the bank abstraction.
-- console: console implementation of the application.
+- http: contains the http interface of the application, using the monzo adapter to interface with the bank.
+- console: test implementation of the application that allows to execute commands from the console.
+
+### HTTP application
+
+This initial implementation interacts with the monzo APIs, but not yet implement the OAuth flow to fully automate the
+interaction. It requires the access token to be provided in an env variable.
