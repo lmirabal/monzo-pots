@@ -21,6 +21,7 @@ class FundsDistributionTest {
     private val bank = StubBank()
     private val accountAddress = AccountAddress("123456", "123456789")
     private val account = bank.createAccount(CreateAccountRequest(accountAddress, 0.pounds))
+    private val fundsDistributor = FundsDistributorApplication(bank)
 
     @Test
     fun `distribute funds`() {
@@ -39,7 +40,7 @@ class FundsDistributionTest {
             keepInMainAccount = 30.pounds,
             remainder = Remainder(to = remainder, atLeast = 10.pounds)
         )
-        distributeFunds(bank, manifest)
+        fundsDistributor.distribute(manifest)
 
         bank.asserting()
             .potBalance(source, 0)
@@ -62,7 +63,7 @@ class FundsDistributionTest {
             keepInMainAccount = 30.pounds,
             remainder = Remainder(to = remainder, atLeast = 10.pounds)
         )
-        distributeFunds(bank, manifest)
+        fundsDistributor.distribute(manifest)
 
         bank.asserting()
             .potBalance(source, 0)
@@ -85,7 +86,7 @@ class FundsDistributionTest {
             remainder = Remainder(to = remainder, atLeast = 10.pounds)
         )
         val exception = assertThrows<IllegalArgumentException> {
-            distributeFunds(bank, manifest)
+            fundsDistributor.distribute(manifest)
         }
 
         assertEquals("Not enough funds: required=£110.00 available=£100.00", exception.message)
@@ -105,7 +106,7 @@ class FundsDistributionTest {
             remainder = Remainder(to = remainder, atLeast = 100.pounds)
         )
         val exception = assertThrows<IllegalArgumentException> {
-            distributeFunds(bank, manifest)
+            fundsDistributor.distribute(manifest)
         }
 
         bank.asserting()
@@ -133,7 +134,7 @@ class FundsDistributionTest {
             remainder = Remainder(to = remainder, atLeast = 10.pounds)
         )
         val exception = assertThrows<IllegalArgumentException> {
-            distributeFunds(bank, manifest)
+            fundsDistributor.distribute(manifest)
         }
 
         bank.asserting()
@@ -158,7 +159,7 @@ class FundsDistributionTest {
             remainder = Remainder(to = invalidRemainder, atLeast = 10.pounds)
         )
         val exception = assertThrows<IllegalArgumentException> {
-            distributeFunds(bank, manifest)
+            fundsDistributor.distribute(manifest)
         }
 
         bank.asserting()
@@ -186,7 +187,7 @@ class FundsDistributionTest {
             remainder = Remainder(to = invalidRemainder, atLeast = 100.pounds)
         )
         val exception = assertThrows<IllegalArgumentException> {
-            distributeFunds(bank, manifest)
+            fundsDistributor.distribute(manifest)
         }
 
         bank.asserting()
