@@ -4,6 +4,7 @@ import lmirabal.finance.Amount
 import lmirabal.finance.pounds
 import lmirabal.infrastructure.CreateAccountRequest
 import lmirabal.infrastructure.CreatePotRequest
+import lmirabal.infrastructure.OnboardingBank
 import lmirabal.infrastructure.StubBank
 import lmirabal.model.Account
 import lmirabal.model.AccountAddress
@@ -18,7 +19,7 @@ import kotlin.test.assertEquals
 
 class FundsDistributorContract {
 
-    private val bank = StubBank()
+    private val bank: OnboardingBank = StubBank()
     private val accountAddress = AccountAddress("123456", "123456789")
     private val account = bank.createAccount(CreateAccountRequest(accountAddress, 0.pounds))
     private val fundsDistributor = FundsDistributorApplication(bank)
@@ -199,13 +200,13 @@ class FundsDistributorContract {
         )
     }
 
-    private fun StubBank.createPot(name: String, initialBalance: Int) =
+    private fun OnboardingBank.createPot(name: String, initialBalance: Int) =
         PotName(name)
             .also { potName ->
                 createPot(CreatePotRequest(account, potName, Amount.ofPounds(initialBalance)))
             }
 
-    private fun StubBank.asserting() = Asserter(getAccountBy(accountAddress), getPotsFor(account))
+    private fun OnboardingBank.asserting() = Asserter(getAccountBy(accountAddress), getPotsFor(account))
 
     private class Asserter(private val account: Account, private val pots: List<Pot>) {
         fun accountBalance(expectedBalance: Int): Asserter {
