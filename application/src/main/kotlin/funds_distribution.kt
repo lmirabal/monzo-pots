@@ -35,7 +35,7 @@ class FundsDistributorApplication(private val bank: Bank) : FundsDistributor {
     }
 }
 
-internal operator fun List<Pot>.get(potName: PotName): Pot = first { it.name == potName }
+private operator fun List<Pot>.get(potName: PotName): Pot = first { it.name == potName }
 
 private fun List<PotName>.missingFrom(pots: List<Pot>): List<PotName> {
     val existingPotNames = pots.map { it.name }

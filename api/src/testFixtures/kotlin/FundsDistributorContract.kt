@@ -220,3 +220,5 @@ abstract class FundsDistributorContract {
         }
     }
 }
+
+private operator fun List<Pot>.get(potName: PotName): Pot = first { it.name == potName }
