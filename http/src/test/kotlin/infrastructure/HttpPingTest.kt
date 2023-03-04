@@ -1,6 +1,8 @@
 package lmirabal.infrastructure
 
 import com.natpryce.hamkrest.assertion.assertThat
+import lmirabal.FundsDistributor
+import lmirabal.model.DistributionManifest
 import org.http4k.client.OkHttp
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
@@ -13,7 +15,7 @@ import org.junit.jupiter.api.Test
 
 class HttpPingTest {
     private val client = OkHttp()
-    private val server = httpServer(0)
+    private val server = httpServer(NullApplication, 0)
 
     @BeforeEach
     fun setup() {
@@ -39,5 +41,10 @@ class HttpPingTest {
             client(Request(GET, "http://localhost:${server.port()}/hello")),
             hasStatus(NOT_FOUND)
         )
+    }
+
+    object NullApplication : FundsDistributor {
+        override fun distribute(manifest: DistributionManifest) {
+        }
     }
 }

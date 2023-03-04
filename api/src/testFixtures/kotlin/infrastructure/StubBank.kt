@@ -4,21 +4,17 @@ import lmirabal.finance.Amount
 import lmirabal.model.Account
 import lmirabal.model.AccountAddress
 import lmirabal.model.Pot
-import lmirabal.model.PotName
 import java.util.*
 
-data class CreateAccountRequest(val address: AccountAddress, val balance: Amount)
-data class CreatePotRequest(val account: Account, val name: PotName, val balance: Amount)
-
-class StubBank(private val idGenerator: IdGenerator = randomUuid()) : Bank {
+class StubBank(private val idGenerator: IdGenerator = randomUuid()) : OnboardingBank {
     private val accounts = mutableMapOf<AccountAddress, Account>()
     private val pots = mutableMapOf<Account, Set<Pot>>()
 
-    fun createAccount(request: CreateAccountRequest): Account =
+    override fun createAccount(request: CreateAccountRequest): Account =
         Account(id = idGenerator(), request.address, request.balance)
             .also { account -> accounts[request.address] = account }
 
-    fun createPot(request: CreatePotRequest): Pot {
+    override fun createPot(request: CreatePotRequest): Pot {
         return Pot(idGenerator(), request.name, request.balance)
             .also { pot ->
                 pots.merge(request.account, setOf(pot)) { existing, newPot -> existing + newPot }

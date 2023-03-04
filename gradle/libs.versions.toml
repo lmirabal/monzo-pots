@@ -12,6 +12,7 @@ http4k-okhttp = { module = "org.http4k:http4k-client-okhttp", version.ref = "htt
 http4k-jetty = { module = "org.http4k:http4k-server-jetty", version.ref = "http4k" }
 http4k-hamkrest = { module = "org.http4k:http4k-testing-hamkrest", version.ref = "http4k" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.0" }
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version = "5.8.1" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version = "5.8.1" }
 testlogger-gradle = { module = "com.adarshr:gradle-test-logger-plugin", version = "3.2.0" }
 

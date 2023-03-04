@@ -7,33 +7,35 @@ import lmirabal.model.DistributionManifest
 import lmirabal.model.Pot
 import lmirabal.model.PotName
 
-fun distributeFunds(bank: Bank, manifest: DistributionManifest) {
-    val currentAccount: Account = bank.getAccountBy(manifest.mainAccount)
-    val pots: List<Pot> = bank.getPotsFor(currentAccount)
+class FundsDistributorApplication(private val bank: Bank) : FundsDistributor {
+    override fun distribute(manifest: DistributionManifest) {
+        val currentAccount: Account = bank.getAccountBy(manifest.mainAccount)
+        val pots: List<Pot> = bank.getPotsFor(currentAccount)
 
-    val missingPots = manifest.potNames.missingFrom(pots)
-    if (missingPots.isNotEmpty())
-        throw IllegalArgumentException("Manifest contains invalid pots=$missingPots")
+        val missingPots = manifest.potNames.missingFrom(pots)
+        if (missingPots.isNotEmpty())
+            throw IllegalArgumentException("Manifest contains invalid pots=$missingPots")
 
-    val sourcePot = pots[manifest.source]
-    if (sourcePot.balance < manifest.minimumSourceFunds)
-        throw IllegalArgumentException(
-            "Not enough funds: required=${manifest.minimumSourceFunds} available=${sourcePot.balance}"
-        )
-    bank.withdraw(from = sourcePot, to = currentAccount, sourcePot.balance)
+        val sourcePot = pots[manifest.source]
+        if (sourcePot.balance < manifest.minimumSourceFunds)
+            throw IllegalArgumentException(
+                "Not enough funds: required=${manifest.minimumSourceFunds} available=${sourcePot.balance}"
+            )
+        bank.withdraw(from = sourcePot, to = currentAccount, sourcePot.balance)
 
-    for (deposit in manifest.deposits) {
-        val targetPot = pots[deposit.to]
-        bank.deposit(from = currentAccount, to = targetPot, amount = deposit.amount)
+        for (deposit in manifest.deposits) {
+            val targetPot = pots[deposit.to]
+            bank.deposit(from = currentAccount, to = targetPot, amount = deposit.amount)
+        }
+
+        val remainderBalance = manifest.remainderAmount(sourcePot.balance)
+
+        val remainderPot = pots[manifest.remainder.to]
+        bank.deposit(from = currentAccount, to = remainderPot, amount = remainderBalance)
     }
-
-    val remainderBalance = manifest.remainderAmount(sourcePot.balance)
-
-    val remainderPot = pots[manifest.remainder.to]
-    bank.deposit(from = currentAccount, to = remainderPot, amount = remainderBalance)
 }
 
-internal operator fun List<Pot>.get(potName: PotName): Pot = first { it.name == potName }
+private operator fun List<Pot>.get(potName: PotName): Pot = first { it.name == potName }
 
 private fun List<PotName>.missingFrom(pots: List<Pot>): List<PotName> {
     val existingPotNames = pots.map { it.name }

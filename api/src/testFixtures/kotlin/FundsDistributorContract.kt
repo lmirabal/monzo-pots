@@ -4,6 +4,7 @@ import lmirabal.finance.Amount
 import lmirabal.finance.pounds
 import lmirabal.infrastructure.CreateAccountRequest
 import lmirabal.infrastructure.CreatePotRequest
+import lmirabal.infrastructure.OnboardingBank
 import lmirabal.infrastructure.StubBank
 import lmirabal.model.Account
 import lmirabal.model.AccountAddress
@@ -16,11 +17,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
-class FundsDistributionTest {
+abstract class FundsDistributorContract {
 
-    private val bank = StubBank()
-    private val accountAddress = AccountAddress("123456", "123456789")
-    private val account = bank.createAccount(CreateAccountRequest(accountAddress, 0.pounds))
+    val bank: OnboardingBank = StubBank()
+    abstract val fundsDistributor: FundsDistributor
+    private val accountAddress: AccountAddress = AccountAddress("123456", "123456789")
+    private val account: Account = bank.createAccount(CreateAccountRequest(accountAddress, 0.pounds))
 
     @Test
     fun `distribute funds`() {
@@ -39,7 +41,7 @@ class FundsDistributionTest {
             keepInMainAccount = 30.pounds,
             remainder = Remainder(to = remainder, atLeast = 10.pounds)
         )
-        distributeFunds(bank, manifest)
+        fundsDistributor.distribute(manifest)
 
         bank.asserting()
             .potBalance(source, 0)
@@ -62,7 +64,7 @@ class FundsDistributionTest {
             keepInMainAccount = 30.pounds,
             remainder = Remainder(to = remainder, atLeast = 10.pounds)
         )
-        distributeFunds(bank, manifest)
+        fundsDistributor.distribute(manifest)
 
         bank.asserting()
             .potBalance(source, 0)
@@ -85,7 +87,7 @@ class FundsDistributionTest {
             remainder = Remainder(to = remainder, atLeast = 10.pounds)
         )
         val exception = assertThrows<IllegalArgumentException> {
-            distributeFunds(bank, manifest)
+            fundsDistributor.distribute(manifest)
         }
 
         assertEquals("Not enough funds: required=£110.00 available=£100.00", exception.message)
@@ -105,7 +107,7 @@ class FundsDistributionTest {
             remainder = Remainder(to = remainder, atLeast = 100.pounds)
         )
         val exception = assertThrows<IllegalArgumentException> {
-            distributeFunds(bank, manifest)
+            fundsDistributor.distribute(manifest)
         }
 
         bank.asserting()
@@ -133,7 +135,7 @@ class FundsDistributionTest {
             remainder = Remainder(to = remainder, atLeast = 10.pounds)
         )
         val exception = assertThrows<IllegalArgumentException> {
-            distributeFunds(bank, manifest)
+            fundsDistributor.distribute(manifest)
         }
 
         bank.asserting()
@@ -158,7 +160,7 @@ class FundsDistributionTest {
             remainder = Remainder(to = invalidRemainder, atLeast = 10.pounds)
         )
         val exception = assertThrows<IllegalArgumentException> {
-            distributeFunds(bank, manifest)
+            fundsDistributor.distribute(manifest)
         }
 
         bank.asserting()
@@ -186,7 +188,7 @@ class FundsDistributionTest {
             remainder = Remainder(to = invalidRemainder, atLeast = 100.pounds)
         )
         val exception = assertThrows<IllegalArgumentException> {
-            distributeFunds(bank, manifest)
+            fundsDistributor.distribute(manifest)
         }
 
         bank.asserting()
@@ -198,13 +200,13 @@ class FundsDistributionTest {
         )
     }
 
-    private fun StubBank.createPot(name: String, initialBalance: Int) =
+    private fun OnboardingBank.createPot(name: String, initialBalance: Int) =
         PotName(name)
             .also { potName ->
                 createPot(CreatePotRequest(account, potName, Amount.ofPounds(initialBalance)))
             }
 
-    private fun StubBank.asserting() = Asserter(getAccountBy(accountAddress), getPotsFor(account))
+    private fun OnboardingBank.asserting() = Asserter(getAccountBy(accountAddress), getPotsFor(account))
 
     private class Asserter(private val account: Account, private val pots: List<Pot>) {
         fun accountBalance(expectedBalance: Int): Asserter {
@@ -218,3 +220,5 @@ class FundsDistributionTest {
         }
     }
 }
+
+private operator fun List<Pot>.get(potName: PotName): Pot = first { it.name == potName }
